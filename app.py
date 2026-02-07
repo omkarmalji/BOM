@@ -12,14 +12,20 @@ st.title("BOM Extractor MVP")
 st.markdown("Upload a product diagram to extract a Bill of Materials.")
 
 # Sidebar for API Key
-# Try to get API key from secrets
+# Hardcoded Key (Fallback)
+HARDCODED_KEY = "AIzaSyAnX3rjeSeyia3KrXB28UHcBN9Bz6tHGAU"
+
+# Try to get API key from secrets, else use hardcoded key
 try:
-    api_key = st.secrets["general"]["GOOGLE_API_KEY"]
-except FileNotFoundError:
-    with st.sidebar:
-        api_key = st.text_input("Enter Google API Key", type="password")
-        st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
-except KeyError:
+    if "general" in st.secrets and "GOOGLE_API_KEY" in st.secrets["general"]:
+        api_key = st.secrets["general"]["GOOGLE_API_KEY"]
+    else:
+        api_key = HARDCODED_KEY
+except:
+    api_key = HARDCODED_KEY
+
+# Only show sidebar input if strictly necessary (shouldn't be reached with hardcoded key)
+if not api_key:
      with st.sidebar:
         api_key = st.text_input("Enter Google API Key", type="password")
         st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
