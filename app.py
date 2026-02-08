@@ -11,14 +11,10 @@ st.set_page_config(page_title="BOM Extractor", layout="wide")
 st.title("BOM Extractor MVP")
 st.markdown("Upload a product diagram to extract a Bill of Materials.")
 
-# Get API key from environment variable (recommended by Google)
-# See: https://ai.google.dev/gemini-api/docs/api-key#python
-api_key = os.environ.get("GEMINI_API_KEY")
-
-if not api_key:
-    st.error("API key not found. Please set the GEMINI_API_KEY environment variable.")
-    st.info("**How to set:**\n1. Open System Environment Variables on Windows.\n2. Add a new variable named `GEMINI_API_KEY` with your key as the value.\n3. Restart the terminal and run the app again.")
-    st.stop()
+# Get API key from sidebar
+with st.sidebar:
+    api_key = st.text_input("Enter Google API Key", type="password")
+    st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
 
 # File Uploader
 uploaded_file = st.file_uploader("Upload an image (PNG, JPG, JPEG)", type=["png", "jpg", "jpeg"])
