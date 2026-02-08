@@ -3,7 +3,7 @@ import google.generativeai as genai
 from PIL import Image
 import pandas as pd
 import json
-import io
+import os
 
 # Set page config
 st.set_page_config(page_title="BOM Extractor", layout="wide")
@@ -11,24 +11,14 @@ st.set_page_config(page_title="BOM Extractor", layout="wide")
 st.title("BOM Extractor MVP")
 st.markdown("Upload a product diagram to extract a Bill of Materials.")
 
-# Sidebar for API Key
-# Hardcoded Key (Fallback)
-HARDCODED_KEY = "AIzaSyAnX3rjeSeyia3KrXB28UHcBN9Bz6tHGAU"
+# Get API key from environment variable (recommended by Google)
+# See: https://ai.google.dev/gemini-api/docs/api-key#python
+api_key = os.environ.get("GEMINI_API_KEY")
 
-# Try to get API key from secrets, else use hardcoded key
-try:
-    if "general" in st.secrets and "GOOGLE_API_KEY" in st.secrets["general"]:
-        api_key = st.secrets["general"]["GOOGLE_API_KEY"]
-    else:
-        api_key = HARDCODED_KEY
-except:
-    api_key = HARDCODED_KEY
-
-# Only show sidebar input if strictly necessary (shouldn't be reached with hardcoded key)
 if not api_key:
-     with st.sidebar:
-        api_key = st.text_input("Enter Google API Key", type="password")
-        st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
+    st.error("API key not found. Please set the GEMINI_API_KEY environment variable.")
+    st.info("**How to set:**\n1. Open System Environment Variables on Windows.\n2. Add a new variable named `GEMINI_API_KEY` with your key as the value.\n3. Restart the terminal and run the app again.")
+    st.stop()
 
 # File Uploader
 uploaded_file = st.file_uploader("Upload an image (PNG, JPG, JPEG)", type=["png", "jpg", "jpeg"])
