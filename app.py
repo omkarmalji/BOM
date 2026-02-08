@@ -11,10 +11,38 @@ st.set_page_config(page_title="BOM Extractor", layout="wide")
 st.title("BOM Extractor MVP")
 st.markdown("Upload a product diagram to extract a Bill of Materials.")
 
-# Get API key from sidebar
+# Initialize session state for API key
+if "api_key" not in st.session_state:
+    st.session_state.api_key = ""
+
+# Get API key from sidebar with save functionality
 with st.sidebar:
-    api_key = st.text_input("Enter Google API Key", type="password")
-    st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
+    st.subheader("🔑 API Key Setup")
+    
+    # Show current status
+    if st.session_state.api_key:
+        st.success("✅ API Key saved!")
+        if st.button("Clear API Key"):
+            st.session_state.api_key = ""
+            st.rerun()
+    else:
+        key_input = st.text_input(
+            "Enter Google API Key", 
+            type="password",
+            placeholder="Paste your key here..."
+        )
+        
+        if st.button("💾 Save Key", type="primary"):
+            if key_input:
+                st.session_state.api_key = key_input
+                st.rerun()
+            else:
+                st.error("Please enter a key first.")
+        
+        st.markdown("[Get your API key here](https://aistudio.google.com/app/apikey)")
+
+# Use the saved key
+api_key = st.session_state.api_key
 
 # File Uploader
 uploaded_file = st.file_uploader("Upload an image (PNG, JPG, JPEG)", type=["png", "jpg", "jpeg"])
@@ -25,7 +53,7 @@ if uploaded_file is not None:
 
     if st.button("Generate BOM"):
         if not api_key:
-            st.error("Please ensure your Google API Key is set in .streamlit/secrets.toml or enter it in the sidebar.")
+            st.error("Please enter and save your API Key in the sidebar first.")
         else:
             try:
                 # Configure Gemini
